@@ -20,4 +20,14 @@ object RetrofitClient {
     val specialtyApi : SpecialtyApi by lazy {
         retrofit.create(SpecialtyApi::class.java)
     }
+    val doctorApi: DoctorApi by lazy {
+        retrofit.create(DoctorApi::class.java)
+    }
+    val agendaApi: AgendaApi by lazy{
+        retrofit.create(AgendaApi::class.java)
+    }
+    val slotAgendaApi: SlotAgendaApi by lazy{
+        retrofit.create(SlotAgendaApi::class.java)
+    }
+
 }
