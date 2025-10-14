@@ -2,6 +2,11 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.secrets.gradle.plugin)
+}
+
+secrets {
+    propertiesFileName = "secrets.properties"
 }
 
 android {
@@ -9,8 +14,6 @@ android {
     compileSdk = 36
 
     defaultConfig {
-        buildConfigField ("String", "BASE_URL", "\"https://tu-backend.com/api/\"")
-        buildConfigField ("String", "API_KEY", "\"MI_API_KEY_123\"")
         applicationId = "com.example.appcitaexpress"
         minSdk = 24
         targetSdk = 36
@@ -57,10 +60,10 @@ dependencies {
     implementation(libs.converter.gson)
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.picasso)
-    implementation("com.google.accompanist:accompanist-systemuicontroller:0.30.1")
-    implementation("androidx.compose.material:material-icons-core")
-    implementation("androidx.compose.material:material-icons-extended")
-    implementation(libs.androidx.compose.material3)
+    implementation(libs.accompanist.systemuicontroller)
+    implementation(libs.androidx.material.icons.core)
+    implementation(libs.androidx.material.icons.extended)
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
