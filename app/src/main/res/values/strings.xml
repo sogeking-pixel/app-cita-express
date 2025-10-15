@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">App Cita Express</string>
+    <string name="loading_failed">¡Ups! Algo salió mal</string>
+    <string name="check_internet_connection">Por favor, revisa tu conexión a internet e inténtalo de nuevo.</string>
+    <string name="retry">Reintentar</string>
+    <string name="connection_error">Error de conexión</string>
 </resources>
