@@ -1,22 +1,18 @@
-package com.example.appcitaexpress.ui.screen.Home
+package com.example.appcitaexpress.ui.screen.home
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-
+import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.DropdownMenuItem
@@ -32,48 +28,49 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.rememberDatePickerState
-import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.appcitaexpress.data.model.Specialty
+import com.example.appcitaexpress.ui.components.ErrorScreen
+import com.example.appcitaexpress.ui.components.LoadingScreen
+import com.example.appcitaexpress.ui.components.LogoHeader
+import com.example.appcitaexpress.ui.components.TitleHeaderForm
 import com.example.appcitaexpress.ui.theme.AppCitaExpressTheme
 import com.example.appcitaexpress.ui.theme.GreenMain
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-val list_options = listOf(
-    "hola","como","estas"
-)
-
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
     color: Color = MaterialTheme.colorScheme.background,
-){
+    homeViewModel: HomeViewModel = viewModel()
+) {
+    val homeUiState by homeViewModel.homeUiState.collectAsState()
+
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .background(GreenMain) // Tu verde
+            .background(GreenMain)
             .statusBarsPadding()
-    ){
+    ) {
         Column(
             modifier = Modifier.background(color),
         ) {
             LogoHeader(Modifier.padding(bottom = 40.dp))
-            FormAgenda()
+            FormAgenda(homeUiState, homeViewModel)
 
         }
 
@@ -81,101 +78,53 @@ fun HomeScreen(
 
 }
 
-@Composable
-fun LogoHeader(
-    modifier: Modifier = Modifier,
-    color: Color = MaterialTheme.colorScheme.background,
-    backgroundColor: Color = GreenMain,
-){
-    Box(
-        modifier = modifier
-            .fillMaxWidth()
-            .height(150.dp)
-            .background(
-                color = backgroundColor,
-                shape = RoundedCornerShape(bottomStart = 50.dp, bottomEnd = 50.dp)
-            )
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 30.dp, start = 20.dp, end = 20.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(
-                text = "CitaExpress",
-                color = color,
-                fontSize =48.sp,
-                fontWeight = FontWeight.Bold,
-                textAlign = TextAlign.Center
-            )
-            Text(
-                text = "Todas tus citas médicas en una sola plataforma",
-                color = color,
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Medium,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.padding(top = 10.dp)
-            )
-        }
-
-    }
-}
 
 @Composable
 fun FormAgenda(
-    modifier: Modifier = Modifier,
-    title: String = "Agenda",
-){
-    Column (modifier = modifier.padding(horizontal = 20.dp))
-    {
-        TitleHeaderForm(
-            title = "Agendar Citas Medicas",
-            numberStep = 1,
-            color = GreenMain,
-            backgroundColor = MaterialTheme.colorScheme.background,
-        )
-        HorizontalDivider(thickness = 1.dp)
-        BodyFormAgenda()
+    homeUiState: HomeUiState,
+    homeViewModel: HomeViewModel,
+    modifier: Modifier = Modifier
+) {
+    Column(modifier = modifier.padding(horizontal = 20.dp)) {
 
-    }
-}
-
-@Composable
-fun TitleHeaderForm(
-    modifier: Modifier = Modifier,
-    title: String = "Agenda",
-    color: Color = MaterialTheme.colorScheme.background,
-    backgroundColor: Color = GreenMain,
-    numberStep: Int = 1,
-){
-    Row(modifier = modifier.padding(vertical = 10.dp)){
-        Box(
-            modifier = Modifier.size(22.dp).background(color, shape = CircleShape),
-            contentAlignment = Alignment.Center
-        ){
-            Text(text = "$numberStep", color = backgroundColor, fontWeight = FontWeight.Bold)
+        when (homeUiState) {
+            is HomeUiState.Loading -> {
+                LoadingScreen()
+            }
+            is HomeUiState.Success -> {
+                TitleHeaderForm(
+                    title = "Buscar Citas Medicas",
+                    numberStep = 1,
+                    color = GreenMain,
+                    backgroundColor = MaterialTheme.colorScheme.background,
+                )
+                HorizontalDivider(thickness = 1.dp)
+                BodyFormAgenda(homeUiState.specialties, homeViewModel)
+            }
+            is HomeUiState.Error -> {
+                ErrorScreen({homeViewModel.loadSpecialties()})
+            }
         }
-        Spacer(modifier = Modifier.width(8.dp))
-
-        Text(text = title, color = color, fontSize = 18.sp, fontWeight = FontWeight.Bold,)
     }
-
 }
 
 @Composable
 fun BodyFormAgenda(
+    specialties: List<Specialty>,
+    homeViewModel: HomeViewModel,
     modifier: Modifier = Modifier,
-){
-    val optionText = list_options[0]
-    var selectedCategory by remember { mutableStateOf<String>(optionText) }
-    Column (modifier = modifier){
+) {
+    Column(modifier = modifier) {
         NavList(
-            options = list_options,
+            specialties = specialties,
             modifier = Modifier.padding(vertical = 30.dp),
-            onSelectedCategory = {selectedCategory = it}
+            onSpecialtySelected = { homeViewModel.onSpecialtySelected(it) }
         )
-        DateInputWithPicker()
+        DateInputWithPicker(onDateSelected = { homeViewModel.onDateSelected(it) })
+        ButtonSearchDoctor(
+            modifier = Modifier.padding(top = 30.dp),
+            onClick = { homeViewModel.searchDoctors() }
+        )
     }
 
 }
@@ -183,11 +132,11 @@ fun BodyFormAgenda(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NavList(
-    options: List<String>,
+    specialties: List<Specialty>,
     modifier: Modifier = Modifier,
-    onSelectedCategory: (String) -> Unit = {}
-){
-    var optionSelect by remember { mutableStateOf(options[0]) }
+    onSpecialtySelected: (Specialty) -> Unit
+) {
+    var selectedSpecialty by remember { mutableStateOf<Specialty?>(null) }
     var isExpanded by remember { mutableStateOf(false) }
 
     ExposedDropdownMenuBox(
@@ -196,28 +145,26 @@ fun NavList(
         modifier = modifier
     ) {
         TextField(
-            value = optionSelect,
+            value = selectedSpecialty?.nombre ?: "",
             onValueChange = {},
             readOnly = true,
-            label = { Text("Prueba") },
+            label = { Text("Especialidad") },
             trailingIcon = {
                 ExposedDropdownMenuDefaults.TrailingIcon(expanded = isExpanded)
             },
-            modifier = Modifier.menuAnchor().fillMaxWidth()
+            modifier = Modifier.fillMaxWidth().menuAnchor(),
         )
-
         ExposedDropdownMenu(
             expanded = isExpanded,
             onDismissRequest = { isExpanded = false }
         ) {
-            options.forEach { option ->
-                val optionText = option
+            specialties.forEach { specialty ->
                 DropdownMenuItem(
-                    text = { Text(optionText) },
+                    text = { Text(specialty.nombre) },
                     onClick = {
-                        optionSelect = option
+                        selectedSpecialty = specialty
                         isExpanded = false
-                        onSelectedCategory(optionText)
+                        onSpecialtySelected(specialty)
                     }
                 )
             }
@@ -227,7 +174,7 @@ fun NavList(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DateInputWithPicker() {
+fun DateInputWithPicker(onDateSelected: (String) -> Unit) {
     var showDatePicker by remember { mutableStateOf(false) }
     val datePickerState = rememberDatePickerState()
     val dateFormatter = remember { SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()) }
@@ -235,12 +182,14 @@ fun DateInputWithPicker() {
     val selectedDateText by remember {
         derivedStateOf {
             datePickerState.selectedDateMillis?.let {
-                dateFormatter.format(Date(it))
+                val formattedDate = dateFormatter.format(Date(it))
+                onDateSelected(formattedDate)
+                formattedDate
             } ?: "Selecciona una fecha"
         }
     }
 
-    Column(modifier = Modifier.padding(16.dp)) {
+    Column(modifier = Modifier) {
         OutlinedTextField(
             value = selectedDateText,
             onValueChange = {},
@@ -288,6 +237,24 @@ fun DateInputWithPicker() {
     }
 }
 
+
+@Composable
+fun ButtonSearchDoctor(
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit
+) {
+    Button(
+        modifier = modifier.fillMaxWidth(),
+        onClick = onClick,
+        colors = ButtonDefaults.buttonColors(
+            containerColor = GreenMain,
+            contentColor = Color.White
+        )
+    ) {
+        Text(text = "Buscar Doctor", fontWeight = FontWeight.Bold)
+    }
+}
+
 @Preview(
     showBackground = true,
     widthDp = 350,
@@ -296,7 +263,7 @@ fun DateInputWithPicker() {
 @Composable
 fun GreetingPreview() {
     AppCitaExpressTheme {
-        Scaffold(modifier = Modifier.fillMaxSize()) {innerPadding ->
+        Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
             HomeScreen(
                 modifier = Modifier.padding(innerPadding)
             )
