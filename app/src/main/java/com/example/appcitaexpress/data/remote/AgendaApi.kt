@@ -5,8 +5,8 @@ import retrofit2.http.GET
 import retrofit2.http.Path
 
 interface AgendaApi {
-    @GET("/agendas/")
+    @GET("agendas/")
     suspend fun getAgendas(): List<Agenda>
-    @GET("/agendas/{id}")
+    @GET("agendas/{id}")
     suspend fun getAgendaById(@Path("id") id: Int): Agenda
 }

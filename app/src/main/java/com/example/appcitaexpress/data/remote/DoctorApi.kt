@@ -5,8 +5,8 @@ import retrofit2.http.GET
 import retrofit2.http.Path
 
 interface DoctorApi {
-    @GET("/medicos/")
+    @GET("medicos/")
     suspend fun getDoctors(): List<Doctor>
-    @GET("/medicos/{id}")
+    @GET("medicos/{id}")
     suspend fun getDoctorById(@Path("id") id: Int): Doctor
 }

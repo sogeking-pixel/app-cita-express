@@ -5,18 +5,20 @@ import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
-const val baseUrl = BuildConfig.BASE_URL
 
 object RetrofitClient {
-    private val okHttpClient = OkHttpClient.Builder().
-    addInterceptor(ApiKeyInterceptor())
+    private val okHttpClient : OkHttpClient by lazy {
+        OkHttpClient.Builder()
+            .addInterceptor(ApiKeyInterceptor())
+            .build()
+    }
+    private val retrofit : Retrofit by lazy {
+        Retrofit.Builder()
+        .baseUrl(BuildConfig.BASE_URL)
+        .client(okHttpClient)
+        .addConverterFactory(GsonConverterFactory.create())
         .build()
-    private val retrofit = Retrofit.Builder()
-    .baseUrl(baseUrl)
-    .client(okHttpClient)
-    .addConverterFactory(GsonConverterFactory.create())
-    .build()
-
+    }
     val specialtyApi : SpecialtyApi by lazy {
         retrofit.create(SpecialtyApi::class.java)
     }
