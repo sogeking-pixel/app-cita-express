@@ -9,7 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.Modifier
-import com.example.appcitaexpress.ui.screen.home.HomeScreen
+import com.example.appcitaexpress.ui.screen.homeui.HomeScreen
 import com.example.appcitaexpress.ui.theme.AppCitaExpressTheme
 import com.example.appcitaexpress.ui.theme.GreenMain
 import com.google.accompanist.systemuicontroller.rememberSystemUiController

@@ -1,6 +1,5 @@
-package com.example.appcitaexpress.ui.screen.home
+package com.example.appcitaexpress.ui.screen.homeui
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -99,7 +98,11 @@ fun FormAgenda(
                     backgroundColor = MaterialTheme.colorScheme.background,
                 )
                 HorizontalDivider(thickness = 1.dp)
-                BodyFormAgenda(homeUiState.specialties, homeViewModel)
+                BodyFormAgenda(
+                    specialties =  homeUiState.dataHome.specialties,
+                    enabled =  (homeUiState.dataHome.selectedSpecialty != null && homeUiState.dataHome.selectedDate != null),
+                    homeViewModel= homeViewModel
+                )
             }
             is HomeUiState.Error -> {
                 ErrorScreen({homeViewModel.loadSpecialties()})
@@ -111,6 +114,7 @@ fun FormAgenda(
 @Composable
 fun BodyFormAgenda(
     specialties: List<Specialty>,
+    enabled: Boolean,
     homeViewModel: HomeViewModel,
     modifier: Modifier = Modifier,
 ) {
@@ -123,7 +127,8 @@ fun BodyFormAgenda(
         DateInputWithPicker(onDateSelected = { homeViewModel.onDateSelected(it) })
         ButtonSearchDoctor(
             modifier = Modifier.padding(top = 30.dp),
-            onClick = { homeViewModel.searchDoctors() }
+            onClick = { homeViewModel.searchDoctors() },
+            enabled = enabled
         )
     }
 
@@ -241,11 +246,13 @@ fun DateInputWithPicker(onDateSelected: (String) -> Unit) {
 @Composable
 fun ButtonSearchDoctor(
     modifier: Modifier = Modifier,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    enabled: Boolean
 ) {
     Button(
         modifier = modifier.fillMaxWidth(),
         onClick = onClick,
+        enabled = enabled,
         colors = ButtonDefaults.buttonColors(
             containerColor = GreenMain,
             contentColor = Color.White
